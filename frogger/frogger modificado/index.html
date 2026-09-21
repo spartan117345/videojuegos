@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Frogger - Dificultad Intermedia</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="game-container">
+    <header class="hud">
+      <div class="hud-item">Puntos: <span id="score">0</span></div>
+      <div class="hud-item">Vidas: <span id="lives">3</span></div>
+      <div class="hud-item">Tiempo: <span id="timer">30</span>s</div>
+    </header>
+
+    <canvas id="gameCanvas" width="520" height="520"></canvas>
+
+    <div id="overlay" class="overlay hidden">
+      <div class="modal">
+        <h2 id="modalTitle">¡Juego Terminado!</h2>
+        <p id="modalMsg">Has perdido todas tus vidas.</p>
+        <button id="restartBtn">Jugar de nuevo</button>
+      </div>
+    </div>
+
+    <div class="dpad">
+      <button class="btn-ctrl up" data-dir="up">▲</button>
+      <button class="btn-ctrl left" data-dir="left">◀</button>
+      <button class="btn-ctrl down" data-dir="down">▼</button>
+      <button class="btn-ctrl right" data-dir="right">▶</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

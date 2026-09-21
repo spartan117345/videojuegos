@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tetris Sangileño - Capital Turística de Santander</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #1d3557, #457b9d);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      background-color: rgba(15, 23, 42, 0.9);
+      padding: 25px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+    }
+
+    h1 {
+      color: #00b4d8;
+      font-size: 1.8rem;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .subtitle {
+      color: #f4a261;
+      font-size: 0.95rem;
+      margin-bottom: 15px;
+    }
+
+    .stats-panel {
+      display: flex;
+      justify-content: space-around;
+      background: #1e293b;
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+
+    .stat-box {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+    }
+
+    .stat-value {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #e07a5f;
+    }
+
+    canvas {
+      border: 4px solid #2a9d8f;
+      border-radius: 8px;
+      background-color: #0b132b;
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
+      display: block;
+      margin: 0 auto 15px auto;
+    }
+
+    button {
+      background-color: #e76f51;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.1s;
+      width: 100%;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    button:hover {
+      background-color: #f4a261;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .controls-hint {
+      margin-top: 12px;
+      font-size: 0.8rem;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>TETRIS SANGILEÑO</h1>
+    <div class="subtitle">🌲 Capital Turística de Santander 🌊</div>
+
+    <div class="stats-panel">
+      <div class="stat-box">
+        <span class="stat-label">Puntaje</span>
+        <span class="stat-value" id="score">0</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Nivel</span>
+        <span class="stat-value" id="level">1</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Líneas</span>
+        <span class="stat-value" id="lines">0</span>
+      </div>
+    </div>
+
+    <!-- Canvas con dimensiones fijas de 10x20 bloques de 24px (240x480px) -->
+    <canvas id="board" width="240" height="480"></canvas>
+
+    <button id="play-button">🛶 ¡Iniciar Aventura!</button>
+
+    <div class="controls-hint">
+      Usa las <b>Flechas ← →</b> para mover, <b>↑</b> para rotar y <b>↓</b> para caer rápido.
+    </div>
+  </div>
+
+  <script>
+    // 1. OBTENER REFERENCIAS Y CONFIGURAR CANVAS
+    const canvas = document.getElementById('board');
+    const ctx = canvas.getContext('2d');
+    const playButton = document.getElementById('play-button');
+    const scoreElement = document.getElementById('score');
+    const levelElement = document.getElementById('level');
+    const linesElement = document.getElementById('lines');
+
+    const COLS = 10;
+    const ROWS = 20;
+    const BLOCK_SIZE = 24;
+
+    // Escalar contexto a unidades 1x1
+    ctx.scale(BLOCK_SIZE, BLOCK_SIZE);
+
+    // Colores Sangileños
+    const COLORS = [
+      null,
+      '#00B4D8', // Azul Río Fonce
+      '#D4A373', // Piedra Barichara
+      '#E07A5F', // Atardecer Chicamocha
+      '#F4A261', // Hormiga Culona Dorada
+      '#2A9D8F', // Hojas Gallineral
+      '#6F4E37', // Café Sangileño
+      '#E76F51'  // Kayak
+    ];
+
+    // Formas de las fichas (Tetraminos)
+    const SHAPES = [
+      [],
+      [[0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]], // I
+      [[2, 0, 0], [2, 2, 2], [0, 0, 0]],                      // J
+      [[0, 0, 3], [3, 3, 3], [0, 0, 0]],                      // L
+      [[4, 4], [4, 4]],                                      // O
+      [[0, 5, 5], [5, 5, 0], [0, 0, 0]],                      // S
+      [[0, 6, 0], [6, 6, 6], [0, 0, 0]],                      // T
+      [[7, 7, 0], [0, 7, 7], [0, 0, 0]]                       // Z
+    ];
+
+    // ESTADO DEL JUEGO
+    let board = createBoard();
+    let piece = null;
+    let requestId = null;
+    let lastTime = 0;
+    let dropCounter = 0;
+    let dropInterval = 1000;
+    let score = 0;
+    let lines = 0;
+    let level = 1;
+    let gameOver = false;
+
+    function createBoard() {
+      return Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+    }
+
+    function getNewPiece() {
+      const typeId = Math.floor(Math.random() * 7) + 1;
+      return {
+        x: Math.floor(COLS / 2) - 1,
+        y: 0,
+        shape: SHAPES[typeId]
+      };
+    }
+
+    // 2. INICIAR EL JUEGO
+    function play() {
+      board = createBoard();
+      score = 0;
+      lines = 0;
+      level = 1;
+      dropInterval = 1000;
+      gameOver = false;
+      updateScore();
+
+      piece = getNewPiece();
+
+      if (requestId) {
+        cancelAnimationFrame(requestId);
+      }
+
+      document.removeEventListener('keydown', handleKeyPress);
+      document.addEventListener('keydown', handleKeyPress);
+
+      lastTime = performance.now();
+      animate();
+    }
+
+    function updateScore() {
+      scoreElement.innerText = score;
+      levelElement.innerText = level;
+      linesElement.innerText = lines;
+    }
+
+    // DETECCIÓN DE COLISIONES
+    function collide(board, piece) {
+      for (let y = 0; y < piece.shape.length; y++) {
+        for (let x = 0; x < piece.shape[y].length; x++) {
+          if (piece.shape[y][x] !== 0) {
+            let newX = piece.x + x;
+            let newY = piece.y + y;
+
+            if (newX < 0 || newX >= COLS || newY >= ROWS) {
+              return true;
+            }
+            if (newY >= 0 && board[newY][newX] !== 0) {
+              return true;
+            }
+          }
+        }
+      }
+      return false;
+    }
+
+    // FIJAR PIEZA Y BORRAR LÍNEAS
+    function merge(board, piece) {
+      piece.shape.forEach((row, y) => {
+        row.forEach((value, x) => {
+          if (value > 0) {
+            board[piece.y + y][piece.x + x] = value;
+          }
+        });
+      });
+    }
+
+    function clearLines() {
+      let linesCleared = 0;
+      outer: for (let y = ROWS - 1; y >= 0; y--) {
+        for (let x = 0; x < COLS; x++) {
+          if (board[y][x] === 0) continue outer;
+        }
+
+        const row = board.splice(y, 1)[0].fill(0);
+        board.unshift(row);
+        y++;
+        linesCleared++;
+      }
+
+      if (linesCleared > 0) {
+        lines += linesCleared;
+        score += linesCleared * 100 * level;
+        level = Math.floor(lines / 10) + 1;
+        dropInterval = Math.max(100, 1000 - (level - 1) * 100);
+        updateScore();
+      }
+    }
+
+    // CAÍDA DE LA PIEZA
+    function drop() {
+      piece.y++;
+      if (collide(board, piece)) {
+        piece.y--;
+        merge(board, piece);
+        clearLines();
+        piece = getNewPiece();
+
+        if (collide(board, piece)) {
+          gameOver = true;
+        }
+      }
+      dropCounter = 0;
+    }
+
+    // ROTACIÓN DE LA PIEZA
+    function rotate(shape) {
+      const transposed = shape[0].map((_, i) => shape.map(row => row[i]));
+      return transposed.map(row => row.reverse());
+    }
+
+    function playerRotate() {
+      const originalShape = piece.shape;
+      piece.shape = rotate(piece.shape);
+      if (collide(board, piece)) {
+        piece.shape = originalShape;
+      }
+    }
+
+    // DIBUJAR EN EL CANVAS
+    function draw() {
+      ctx.fillStyle = '#0b132b';
+      ctx.fillRect(0, 0, COLS, ROWS);
+
+      // Dibujar tablero
+      board.forEach((row, y) => {
+        row.forEach((value, x) => {
+          if (value > 0) {
+            ctx.fillStyle = COLORS[value];
+            ctx.fillRect(x, y, 1, 1);
+          }
+        });
+      });
+
+      // Dibujar pieza activa
+      if (piece) {
+        piece.shape.forEach((row, y) => {
+          row.forEach((value, x) => {
+            if (value > 0) {
+              ctx.fillStyle = COLORS[value];
+              ctx.fillRect(piece.x + x, piece.y + y, 1, 1);
+            }
+          });
+        });
+      }
+
+      // Mensaje de Fin de Juego
+      if (gameOver) {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+        ctx.fillRect(0, 5, COLS, 10);
+        ctx.fillStyle = '#E76F51';
+        ctx.font = '1px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('FIN DEL JUEGO', COLS / 2, 9);
+      }
+    }
+
+    // BUCLE DE ANIMACIÓN
+    function animate(time = 0) {
+      const deltaTime = time - lastTime;
+      lastTime = time;
+
+      if (!gameOver) {
+        dropCounter += deltaTime;
+        if (dropCounter > dropInterval) {
+          drop();
+        }
+        draw();
+        requestId = requestAnimationFrame(animate);
+      } else {
+        draw();
+      }
+    }
+
+    // CONTROLES DE TECLADO
+    function handleKeyPress(event) {
+      if (gameOver) return;
+
+      if (event.key === 'ArrowLeft') {
+        piece.x--;
+        if (collide(board, piece)) piece.x++;
+      } else if (event.key === 'ArrowRight') {
+        piece.x++;
+        if (collide(board, piece)) piece.x--;
+      } else if (event.key === 'ArrowDown') {
+        drop();
+      } else if (event.key === 'ArrowUp') {
+        playerRotate();
+      }
+    }
+
+    // 3. VINCULAR BOTÓN
+    playButton.addEventListener('click', play);
+  </script>
+</body>
+</html>

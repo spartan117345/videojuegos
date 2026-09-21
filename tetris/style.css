@@ -1,0 +1,186 @@
+css
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 13px;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #111827, #1e1b4b, #312e81);
+  color: white;
+}
+
+/* Contenedor principal */
+
+.contenedor-juego {
+  min-height: 100vh;
+  max-width: 78.125rem;
+  margin: 0 auto;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+/* Título e información */
+
+.juego-titulo,
+.juego-info {
+  text-align: center;
+}
+
+.juego-titulo {
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: 0.1rem;
+
+  text-shadow: 0 0 1rem rgba(255, 255, 255, 0.25);
+}
+
+.juego-info {
+  font-size: 1.2rem;
+  color: #c7d2fe;
+}
+
+/* Tablero */
+
+.juego-cuadricula {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.7rem;
+
+  padding: 0.8rem;
+
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 1.2rem;
+
+  box-shadow:
+    0 1.5rem 3rem rgba(0, 0, 0, 0.35),
+    inset 0 0 1rem rgba(255, 255, 255, 0.03);
+
+  backdrop-filter: blur(10px);
+}
+
+/* Casillas */
+
+.cuadro {
+  width: 6rem;
+  height: 6rem;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 0.8rem;
+
+  background: rgba(17, 24, 39, 0.9);
+
+  color: #22c55e;
+
+  font-size: 2.2rem;
+  font-weight: bold;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+/* Efecto al pasar el mouse */
+
+.cuadro:hover {
+  background: rgba(55, 65, 81, 0.95);
+
+  transform: translateY(-3px);
+
+  box-shadow:
+    0 0 1rem rgba(99, 102, 241, 0.35);
+}
+
+/* Efecto al presionar */
+
+.cuadro:active {
+  transform: scale(0.95);
+}
+
+/* Botón */
+
+.juego-boton {
+  display: inline-flex;
+
+  padding: 0.9rem 1.8rem;
+
+  border: 1px solid transparent;
+  border-radius: 0.7rem;
+
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+
+  color: white;
+
+  font-size: 1rem;
+  font-weight: bold;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 0.5rem 1.5rem rgba(99, 102, 241, 0.3);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+/* Hover del botón */
+
+.juego-boton:hover {
+  background: linear-gradient(135deg, #818cf8, #a78bfa);
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 0.8rem 2rem rgba(99, 102, 241, 0.45);
+}
+
+/* Click */
+
+.juego-boton:active {
+  transform: scale(0.96);
+}
+
+/* Adaptación para celulares */
+
+@media (max-width: 480px) {
+
+  .juego-titulo {
+    font-size: 2rem;
+  }
+
+  .juego-info {
+    font-size: 1rem;
+  }
+
+  .cuadro {
+    width: 5rem;
+    height: 5rem;
+  }
+
+  .juego-cuadricula {
+    gap: 0.5rem;
+  }
+}
+

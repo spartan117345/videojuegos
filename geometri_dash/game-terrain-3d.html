@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geometry Dash - 3D Spiral Terrain Edition</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        #gameContainer {
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        #gameCanvas {
+            display: block;
+            background: linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 100%);
+            width: 90vw;
+            height: 80vh;
+            max-width: 1600px;
+            max-height: 900px;
+            min-width: 1200px;
+            min-height: 600px;
+        }
+
+        #startMenu {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            backdrop-filter: blur(5px);
+        }
+
+        #startMenu h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+        }
+
+        #startMenu h2 {
+            font-size: 24px;
+            margin-bottom: 30px;
+            color: #ffaa00;
+            text-shadow: 0 0 15px rgba(255, 170, 0, 0.5);
+        }
+
+        .menuButton {
+            padding: 15px 40px;
+            font-size: 20px;
+            margin: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            color: white;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .menuButton:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        #terrainSelector {
+            margin-top: 20px;
+        }
+
+        #terrainSelector select {
+            padding: 10px 20px;
+            font-size: 16px;
+            background: #333;
+            color: white;
+            border: 2px solid #667eea;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #controls {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            color: white;
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        #score {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        #terrainIndicator {
+            position: absolute;
+            top: 50px;
+            right: 10px;
+            color: #00ffff;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+            text-transform: uppercase;
+        }
+
+        .notification {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 36px;
+            font-weight: bold;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+            pointer-events: none;
+            animation: notificationPulse 1s ease-out forwards;
+        }
+
+        @keyframes notificationPulse {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+            50% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.2);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+
+        <div id="startMenu">
+            <h1>GEOMETRY DASH</h1>
+            <h2>3D SPIRAL TERRAIN EDITION</h2>
+
+            <button class="menuButton" onclick="startGame('demo')">PLAY DEMO LEVEL</button>
+            <button class="menuButton" onclick="startGame('endless')">ENDLESS MODE</button>
+            <button class="menuButton" onclick="startGame('spiral')">SPIRAL CHALLENGE</button>
+
+            <div id="terrainSelector">
+                <label style="color: #aaa;">Difficulty: </label>
+                <select id="difficulty">
+                    <option value="1">Easy - Gentle Hills</option>
+                    <option value="2" selected>Medium - Mixed Terrain</option>
+                    <option value="3">Hard - Curves & Spirals</option>
+                    <option value="4">Extreme - 3D Madness</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="controls" style="display: none;">
+            <strong>Controls:</strong><br>
+            SPACE / Click - Jump<br>
+            G - Flip Gravity (in portals)<br>
+            P - Pause
+        </div>
+
+        <div id="score" style="display: none;">
+            Score: <span id="scoreValue">0</span>
+        </div>
+
+        <div id="terrainIndicator" style="display: none;"></div>
+    </div>
+
+    <!-- Load terrain system first -->
+    <script src="src/terrain-system.js"></script>
+    <script src="src/physics-enhanced.js"></script>
+    <script src="src/game-terrain-integration.js"></script>
+
+    <!-- Main game script -->
+    <script>
+        // Game variables
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Set canvas actual dimensions to match CSS size
+        function resizeCanvas() {
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+
+            // Reinitialize if game is running
+            if (gameState && gameState.isPlaying && player) {
+                // Adjust player position to new canvas size
+                const groundHeight = terrainSystem ? terrainSystem.getHeightAt(player.x) : 50;
+                player.y = canvas.height - groundHeight - player.height;
+            }
+        }
+
+        let gameState = {
+            isPlaying: false,
+            isPaused: false,
+            score: 0,
+            gameMode: 'demo',
+            difficulty: 2
+        };
+
+        let terrainSystem;
+        let physics;
+        let particles;
+        let terrainEffects;
+        let player;
+        let obstacles = [];
+        let cameraX = 0;
+
+        // Player class
+        class Player {
+            constructor() {
+                this.x = 100;
+                this.y = canvas.height - 100;
+                this.width = 30;
+                this.height = 30;
+                this.velocityX = 0;
+                this.velocityY = 0;
+                this.isJumping = false;
+                this.rotation = 0;
+                this.gravityMultiplier = 1;
+                this.hasUsedDoubleJump = false;
+                this.canDoubleJump = false;
+                this.color = 0;
+            }
+
+            render() {
+                ctx.save();
+
+                // Translate to player center for rotation
+                ctx.translate(this.x + this.width/2 - cameraX, this.y + this.height/2);
+                ctx.rotate(this.rotation * Math.PI / 180);
+
+                // Draw player as a colorful square
+                const hue = (this.color + performance.now() * 0.1) % 360;
+                ctx.fillStyle = `hsl(${hue}, 70%, 50%)`;
+                ctx.fillRect(-this.width/2, -this.height/2, this.width, this.height);
+
+                // Draw border
+                ctx.strokeStyle = `hsl(${hue}, 90%, 70%)`;
+                ctx.lineWidth = 2;
+                ctx.strokeRect(-this.width/2, -this.height/2, this.width, this.height);
+
+                ctx.restore();
+            }
+        }
+
+        // Initialize game
+        function initGame() {
+            // Ensure canvas is sized properly
+            resizeCanvas();
+
+            // Initialize terrain system
+            terrainSystem = new TerrainSystem(canvas, ctx);
+            physics = new EnhancedPhysics();
+            particles = new TerrainParticles(ctx);
+            terrainEffects = new TerrainEffects(ctx, canvas);
+
+            // Create initial terrain based on game mode
+            createLevel(gameState.gameMode);
+
+            // Create player AFTER terrain is created so we can position correctly
+            player = new Player();
+
+            // Position player on the first terrain segment
+            const startHeight = terrainSystem.getHeightAt(player.x);
+            player.y = canvas.height - startHeight - player.height - 10;
+        }
+
+        // Create level based on mode
+        function createLevel(mode) {
+            terrainSystem.segments = []; // Clear existing terrain
+
+            switch(mode) {
+                case 'demo':
+                    const demoSegments = createDemoLevel(canvas);
+                    demoSegments.forEach(segment => terrainSystem.addSegment(segment));
+                    break;
+
+                case 'endless':
+                    // Start with some basic terrain
+                    terrainSystem.addSegment(new FlatTerrain(0, 500, 50));
+                    // More will be generated procedurally
+                    break;
+
+                case 'spiral':
+                    createSpiralChallenge();
+                    break;
+            }
+        }
+
+        // Create spiral-focused challenge level
+        function createSpiralChallenge() {
+            let x = 0;
+
+            // Starting platform
+            terrainSystem.addSegment(new FlatTerrain(x, x + 400, 50));
+            x += 400;
+
+            // First spiral
+            terrainSystem.addSegment(new Spiral3DTerrain(x, x + 800, {
+                centerX: x + 400,
+                centerY: canvas.height / 2,
+                radius: 100,
+                pitch: 60,
+                rotations: 1.5,
+                color: '#00ffff'
+            }));
+            x += 800;
+
+            // Bridge
+            terrainSystem.addSegment(new CurveTerrain(x, x + 400, 'sine', 30, 0.01, 50));
+            x += 400;
+
+            // Double spiral
+            terrainSystem.addSegment(new Spiral3DTerrain(x, x + 1200, {
+                centerX: x + 600,
+                centerY: canvas.height / 2 - 50,
+                radius: 130,
+                pitch: 100,
+                rotations: 2.5,
+                color: '#ff00ff'
+            }));
+            x += 1200;
+
+            // Final platform
+            terrainSystem.addSegment(new FlatTerrain(x, x + 500, 50));
+        }
+
+        // Start game
+        function startGame(mode) {
+            gameState.gameMode = mode;
+            gameState.difficulty = parseInt(document.getElementById('difficulty').value);
+            gameState.isPlaying = true;
+            gameState.score = 0;
+
+            // Hide menu
+            document.getElementById('startMenu').style.display = 'none';
+            document.getElementById('controls').style.display = 'block';
+            document.getElementById('score').style.display = 'block';
+            document.getElementById('terrainIndicator').style.display = 'block';
+
+            // Initialize and start
+            initGame();
+            gameLoop();
+        }
+
+        // Game loop
+        function gameLoop() {
+            if (!gameState.isPlaying) return;
+
+            if (!gameState.isPaused) {
+                update();
+                render();
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Update game state
+        function update() {
+            // Update player physics with terrain
+            physics.updatePlayer(player, terrainSystem, 1);
+
+            // Update camera
+            cameraX = player.x - 200;
+            terrainSystem.updateCamera(player, 1);
+
+            // Update particles
+            particles.update();
+
+            // Generate terrain in endless mode
+            if (gameState.gameMode === 'endless') {
+                generateEndlessTerrain(terrainSystem, player.x, gameState.difficulty);
+            }
+
+            // Update score
+            gameState.score = Math.floor(player.x / 10);
+            document.getElementById('scoreValue').textContent = gameState.score;
+
+            // Update terrain indicator
+            const terrainType = terrainSystem.getTypeAt(player.x);
+            const indicator = document.getElementById('terrainIndicator');
+            indicator.textContent = terrainType === 'spiral3d' ? '🌀 3D SPIRAL!' :
+                                   terrainType === 'curve' ? '〰️ CURVE' :
+                                   terrainType === 'hill' ? '⛰️ HILL' : '';
+
+            // Check if player fell off
+            if (player.y > canvas.height) {
+                gameOver();
+            }
+        }
+
+        // Render game
+        function render() {
+            // Clear canvas
+            ctx.fillStyle = '#0a0a0a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw gradient background
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#0a0a0a');
+            gradient.addColorStop(1, '#1a1a2e');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Apply terrain effects
+            const currentTerrain = terrainSystem.getTypeAt(player.x);
+            if (terrainEffects.effects[currentTerrain]) {
+                terrainEffects.effects[currentTerrain].render(terrainSystem.camera);
+            }
+
+            // Render terrain
+            terrainSystem.render(cameraX, 0);
+
+            // Render particles
+            particles.render();
+
+            // Render player
+            player.render();
+
+            // Debug info
+            if (terrainSystem.debug) {
+                ctx.fillStyle = 'white';
+                ctx.font = '12px monospace';
+                ctx.fillText(`X: ${Math.floor(player.x)}, Y: ${Math.floor(player.y)}`, 10, 20);
+                ctx.fillText(`Terrain: ${currentTerrain}`, 10, 35);
+            }
+        }
+
+        // Game over
+        function gameOver() {
+            gameState.isPlaying = false;
+            alert(`Game Over! Score: ${gameState.score}`);
+            location.reload();
+        }
+
+        // Input handling
+        document.addEventListener('keydown', (e) => {
+            if (!gameState.isPlaying) return;
+
+            switch(e.code) {
+                case 'Space':
+                    if (!player.isJumping) {
+                        physics.applyJump(player, terrainSystem);
+
+                        // Emit particles
+                        const terrainType = terrainSystem.getTypeAt(player.x);
+                        particles.emit(player.x + player.width/2, player.y + player.height, terrainType, 5);
+                    } else if (player.canDoubleJump && !player.hasUsedDoubleJump) {
+                        player.velocityY = -12;
+                        player.hasUsedDoubleJump = true;
+                    }
+                    break;
+
+                case 'KeyP':
+                    gameState.isPaused = !gameState.isPaused;
+                    break;
+
+                case 'KeyD':
+                    terrainSystem.debug = !terrainSystem.debug;
+                    break;
+            }
+        });
+
+        // Mouse/touch input
+        canvas.addEventListener('click', () => {
+            if (gameState.isPlaying && !player.isJumping) {
+                physics.applyJump(player, terrainSystem);
+
+                const terrainType = terrainSystem.getTypeAt(player.x);
+                particles.emit(player.x + player.width/2, player.y + player.height, terrainType, 5);
+            }
+        });
+
+        // Auto-move player forward
+        setInterval(() => {
+            if (gameState.isPlaying && !gameState.isPaused) {
+                player.x += 5; // Move forward constantly
+            }
+        }, 16);
+
+        // Initialize canvas size
+        window.addEventListener('load', resizeCanvas);
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+    </script>
+</body>
+</html>

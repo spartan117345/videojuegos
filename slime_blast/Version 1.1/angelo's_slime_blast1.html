@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Talha - Space Invaders: 5 Fases</title>
+    <link rel="icon" href="https://i.ibb.co/M6KTWnf/pic.jpg">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div class="wrapper">
+      
+      <!-- Pantalla de Selección de Dificultad -->
+
+<section id="levelScreen" class="level-screen">
+
+<div class="level-header">
+
+<h1>Space Invaders: DELUXE EDITON</h1>
+
+<button type="button" id="helpBtnLevel" class="help-btn" aria-label="Cómo jugar">?</button>
+
+</div>
+
+<p>Selecciona la dificultad de la campaña (5 Fases)</p>
+
+<div class="level-buttons">
+
+<button type="button" data-level="easy" class="level-btn">
+
+<span class="level-name">Fácil</span>
+
+<span class="level-desc">Velocidad lenta · 3 vidas · Bunkers fuertes</span>
+
+</button>
+
+<button type="button" data-level="medium" class="level-btn">
+
+<span class="level-name">Normal</span>
+
+<span class="level-desc">Velocidad media · 3 vidas · Bunkers estándar</span>
+
+</button>
+
+<button type="button" data-level="hard" class="level-btn">
+
+<span class="level-name">Difícil</span>
+
+<span class="level-desc">Velocidad rápida · 2 vidas · Jefe con más vida</span>
+
+</button>
+
+</div>
+
+</section>
+
+      <!-- Pantalla Principal del Juego -->
+      <section id="gameScreen" class="game-screen hidden">
+        <header class="header">
+          <div class="header-titles">
+            <h1>Space Invaders</h1>
+            <div class="badges">
+              <span class="badge difficulty-badge" id="levelBadge">Normal</span>
+              <span class="badge wave-badge" id="waveBadge">Fase 1/5</span>
+            </div>
+          </div>
+          <button type="button" id="helpBtnGame" class="help-btn" aria-label="Cómo jugar">?</button>
+          <div class="header-actions">
+            <div id="hud" class="hud" aria-live="polite">
+              <span>Puntos: <strong id="scoreVal">0</strong></span>
+              <span>Vidas: <strong id="livesVal">3</strong></span>
+            </div>
+            <button type="button" id="changeLevelBtn" class="btn btn-ghost">Menú</button>
+            <button type="button" id="newGameBtn" class="btn">Reiniciar</button>
+          </div>
+        </header>
+
+        <!-- Barra de vida del Jefe Final (Oculta hasta la Fase 5) -->
+        <div id="bossHealthContainer" class="boss-health-container hidden">
+          <div class="boss-info">
+            <span class="boss-name">⚠️ JEFE GIGANTE NOCTURNO ⚠️</span>
+            <span class="boss-hp-text" id="bossHpText">100%</span>
+          </div>
+          <div class="health-bar-bg">
+            <div id="bossHealthBar" class="health-bar-fill" style="width: 100%;"></div>
+          </div>
+        </div>
+
+        <div class="canvas-wrapper">
+          <canvas id="gameCanvas" width="480" height="560"></canvas>
+          
+          <!-- Overlay para Transición entre Fases -->
+          <div id="phaseTransitionOverlay" class="phase-overlay hidden">
+            <div class="phase-card">
+              <h2 id="phaseTitle">¡FASE 1 COMPLETADA!</h2>
+              <p id="phaseSubtitle">Prepárate para la siguiente oleada...</p>
+              <div class="countdown" id="phaseCountdown">3</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Controles Táctiles para Móviles -->
+        <div class="touch-controls">
+          <button type="button" id="leftBtn" class="ctrl-btn" aria-label="Mover a la izquierda"><span aria-hidden="true">◀</span></button>
+          <button type="button" id="fireBtn" class="ctrl-btn fire">DISPARAR</button>
+          <button type="button" id="rightBtn" class="ctrl-btn" aria-label="Mover a la derecha"><span aria-hidden="true">▶</span></button>
+        </div>
+
+        <!-- Overlay de Victoria / Derrota -->
+        <div id="resultOverlay" class="result-overlay hidden" role="dialog" aria-modal="true">
+          <div class="result-box">
+            <h2 id="resultTitle">¡VICTORIA TOTAL!</h2>
+            <p id="resultMsg">Has derrotado al Jefe Gigante y salvado la galaxia.</p>
+            <div class="result-stats">
+              <p>Puntuación Final: <strong id="finalScore">0</strong></p>
+              <p>Fase Alcanzada: <strong id="finalPhase">5/5</strong></p>
+            </div>
+            <div class="result-actions">
+              <button type="button" id="playAgainBtn" class="btn btn-large">Jugar de Nuevo</button>
+              <button type="button" id="changeLevelFromResultBtn" class="btn btn-ghost">Cambiar Dificultad</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Modal de Ayuda / Instrucciones -->
+    <div id="helpOverlay" class="help-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+      <div class="help-modal">
+        <div class="help-header">
+          <h2 id="helpTitle">Instrucciones del Juego</h2>
+          <button type="button" id="helpClose" class="help-close" aria-label="Cerrar instrucciones"><span aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="help-body">
+          <p>Sobrevive a las <strong>5 Fases</strong> de invasión alienígena:</p>
+          <ul>
+            <li><strong>Fases 1 a 4:</strong> Elimina las hileras de naves enemigas. Cada fase será más rápida y agresiva.</li>
+            <li><strong>Fase 5 (Jefe Final):</strong> Enfréntate al Jefe Gigante. Esquiva sus ataques especiales y agota su barra de vida para ganar.</li>
+          </ul>
+          <h3>Controles:</h3>
+          <ul>
+            <li><strong>Moverse:</strong> Flechas Izquierda / Derecha o Teclas <strong>A / D</strong>.</li>
+            <li><strong>Disparar:</strong> Barra Espaciadora o botón en pantalla.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

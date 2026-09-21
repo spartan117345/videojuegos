@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>2048 - Made in San Gil</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <main class="contenedor">
+
+        <!-- ENCABEZADO -->
+
+        <header class="encabezado">
+
+            <div class="titulo">
+
+                <div class="etiqueta">
+                    MADE IN SAN GIL
+                </div>
+
+                <h1>2048</h1>
+
+                <h2>Una aventura sangileña</h2>
+
+                <p>
+                    Combina, avanza y llega hasta 2048.
+                </p>
+
+            </div>
+
+
+            <div class="puntuacion">
+
+                <span>PUNTUACIÓN</span>
+
+                <strong id="score">0</strong>
+
+            </div>
+
+        </header>
+
+
+        <!-- INFORMACIÓN DEL JUEGO -->
+
+        <section class="controles">
+
+            <div class="flechas">
+
+                <div class="flecha arriba">↑</div>
+
+                <div class="fila-flechas">
+
+                    <div class="flecha">←</div>
+
+                    <div class="flecha">↓</div>
+
+                    <div class="flecha">→</div>
+
+                </div>
+
+            </div>
+
+
+            <p>
+                Usa las teclas del teclado para mover las fichas.
+            </p>
+
+
+            <button id="nuevo-juego">
+                🔄 Nuevo juego
+            </button>
+
+        </section>
+
+
+        <!-- TABLERO -->
+
+        <div id="tablero" class="tablero"></div>
+
+
+        <!-- MENSAJE DE FIN -->
+
+        <div id="mensaje" class="mensaje oculto">
+
+            <div class="icono-montana">
+                🏔️
+            </div>
+
+            <h2>¡Llegó tu momento!</h2>
+
+            <p>
+                Has llegado al final de esta aventura.
+            </p>
+
+            <button id="intentar-nuevamente">
+                🎮 Intentar nuevamente
+            </button>
+
+        </div>
+
+
+        <!-- INFORMACIÓN -->
+
+        <section class="aventura">
+
+            <h2>
+                🏞️ 2048 — Made in San Gil
+            </h2>
+
+            <p>
+                Una versión especial del clásico 2048,
+                inspirada en la aventura, naturaleza y cultura
+                de San Gil.
+            </p>
+
+            <p>
+                Combina las fichas, aumenta tu puntuación
+                y alcanza el número <strong>2048</strong>.
+            </p>
+
+        </section>
+
+
+        <!-- CARACTERÍSTICAS -->
+
+        <section class="tarjetas">
+
+            <div class="tarjeta">
+                <span>🏔️</span>
+                <h3>Aventura</h3>
+                <p>Supera cada reto.</p>
+            </div>
+
+
+            <div class="tarjeta">
+                <span>🌿</span>
+                <h3>Naturaleza</h3>
+                <p>Inspirado en San Gil.</p>
+            </div>
+
+
+            <div class="tarjeta">
+                <span>🎯</span>
+                <h3>Desafío</h3>
+                <p>Llega hasta 2048.</p>
+            </div>
+
+        </section>
+
+
+        <!-- PIE DE PÁGINA -->
+
+        <footer>
+
+            <h3>
+                Un juego, mil aventuras...
+            </h3>
+
+            <p>
+                📍 San Gil, Santander 🇨🇴
+            </p>
+
+            <p>
+                Proyecto académico — Especialidad en Sistemas
+            </p>
+
+        </footer>
+
+    </main>
+
+
+    <script src="app.js"></script>
+
+</body>
+
+</html>

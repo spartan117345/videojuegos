@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geometry Dash - ULTRA EDITION 🚀</title>
+    <link rel="stylesheet" href="src/style-enhanced.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1 class="title">GEOMETRY DASH <span class="ultra">ULTRA</span></h1>
+            <div class="stats-container">
+                <div class="stat-item">
+                    <span class="stat-label">SCORE</span>
+                    <span id="score" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">BEST</span>
+                    <span id="highScore" class="stat-value">0</span>
+                </div>
+                <div class="stat-item combo-display">
+                    <span id="combo" class="combo-text"></span>
+                </div>
+            </div>
+        </div>
+
+        <canvas id="gameCanvas"></canvas>
+
+        <div class="controls">
+            <div class="control-row">
+                <div class="control-info">
+                    <span class="key">SPACE</span> or <span class="key">CLICK</span> to Jump
+                    <span class="key">P</span> or <span class="key">ESC</span> to Pause
+                </div>
+                <button id="pauseBtn" class="btn btn-icon" style="display: none;">⏸️</button>
+            </div>
+            <div class="button-row">
+                <button id="startBtn" class="btn btn-start">🚀 START GAME</button>
+                <button id="restartBtn" class="btn btn-restart" style="display: none;">🔄 RESTART</button>
+                <button id="settingsBtn" class="btn btn-settings">⚙️ SETTINGS</button>
+                <button id="achievementsBtn" class="btn btn-achievements">🏆 ACHIEVEMENTS</button>
+            </div>
+        </div>
+
+        <!-- Game Over Screen -->
+        <div id="gameOver" class="game-over" style="display: none;">
+            <h2 class="game-over-title">GAME OVER</h2>
+            <div class="game-over-stats">
+                <p class="final-stat">Final Score: <span id="finalScore" class="highlight">0</span></p>
+                <p class="final-stat">Survival Time: <span id="finalTime" class="highlight">0</span>s</p>
+            </div>
+        </div>
+
+        <!-- Pause Menu -->
+        <div id="pauseMenu" class="pause-menu" style="display: none;">
+            <h2 class="pause-title">PAUSED</h2>
+            <button id="resumeBtn" class="btn btn-resume">▶️ RESUME</button>
+            <div class="pause-stats">
+                <p>Current Score: <span id="pauseScore">0</span></p>
+                <p>Time: <span id="pauseTime">0</span>s</p>
+            </div>
+        </div>
+
+        <!-- Settings Panel -->
+        <div id="settingsPanel" class="settings-panel" style="display: none;">
+            <div class="panel-content">
+                <h2 class="panel-title">⚙️ SETTINGS</h2>
+
+                <div class="setting-group">
+                    <h3>Audio</h3>
+                    <div class="setting-item">
+                        <label>Music Volume</label>
+                        <input type="range" id="musicVolume" min="0" max="100" value="30">
+                        <span id="musicVolumeValue">30%</span>
+                    </div>
+                    <div class="setting-item">
+                        <label>SFX Volume</label>
+                        <input type="range" id="sfxVolume" min="0" max="100" value="50">
+                        <span id="sfxVolumeValue">50%</span>
+                    </div>
+                    <div class="setting-item">
+                        <label>Sound</label>
+                        <button id="toggleSound" class="btn btn-small">🔊 ON</button>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <h3>Character Skins</h3>
+                    <div id="skinSelector" class="skin-grid"></div>
+                </div>
+
+                <button id="closeSettings" class="btn btn-close">✖ CLOSE</button>
+            </div>
+        </div>
+
+        <!-- Achievements Panel -->
+        <div id="achievementsPanel" class="achievements-panel" style="display: none;">
+            <div class="panel-content">
+                <h2 class="panel-title">🏆 ACHIEVEMENTS</h2>
+                <div class="achievement-progress">
+                    <span id="achievementProgress">0/12</span> Unlocked
+                </div>
+                <div id="achievementList" class="achievement-list"></div>
+                <button id="closeAchievements" class="btn btn-close">✖ CLOSE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="src/audio.js"></script>
+    <script src="src/achievements.js"></script>
+    <script src="src/portals-walls.js"></script>
+    <script src="src/game-enhanced.js"></script>
+    <script src="src/ui-controller.js"></script>
+</body>
+</html>

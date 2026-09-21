@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geometry Dash - 3D Spiral Terrain Edition (Fixed)</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        #gameContainer {
+            position: relative;
+            width: 90vw;
+            height: 85vh;
+            max-width: 1600px;
+            max-height: 900px;
+        }
+
+        #gameCanvas {
+            display: block;
+            background: linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 100%);
+            width: 100%;
+            height: 100%;
+            border: 2px solid #333;
+        }
+
+        #startMenu {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        #startMenu h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .menuButton {
+            padding: 15px 40px;
+            font-size: 20px;
+            margin: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            color: white;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .menuButton:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        #controls {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            color: white;
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        #score {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        #debugInfo {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #0f0;
+            font-size: 12px;
+            font-family: monospace;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+
+        <div id="startMenu">
+            <h1>GEOMETRY DASH</h1>
+            <h2>3D SPIRAL TERRAIN EDITION</h2>
+            <button class="menuButton" onclick="game.start('demo')">PLAY DEMO LEVEL</button>
+            <button class="menuButton" onclick="game.start('spiral')">SPIRAL CHALLENGE</button>
+            <button class="menuButton" onclick="game.start('test')">TEST SIMPLE SPIRAL</button>
+        </div>
+
+        <div id="controls" style="display: none;">
+            SPACE/Click - Jump | D - Debug
+        </div>
+
+        <div id="score" style="display: none;">
+            Score: <span id="scoreValue">0</span>
+        </div>
+
+        <div id="debugInfo" style="display: none;"></div>
+    </div>
+
+    <script>
+        // Main game object
+        const game = {
+            canvas: null,
+            ctx: null,
+            state: {
+                isPlaying: false,
+                mode: 'demo',
+                score: 0
+            },
+            player: null,
+            terrain: [],
+            cameraX: 0,
+            animationId: null,
+            debug: false
+        };
+
+        // Initialize canvas
+        function initCanvas() {
+            game.canvas = document.getElementById('gameCanvas');
+            game.ctx = game.canvas.getContext('2d');
+
+            // Set proper dimensions
+            const container = document.getElementById('gameContainer');
+            game.canvas.width = container.clientWidth;
+            game.canvas.height = container.clientHeight;
+        }
+
+        // Simple Terrain Classes (built-in to avoid loading issues)
+        class TerrainSegment {
+            constructor(startX, endX, type = 'flat') {
+                this.startX = startX;
+                this.endX = endX;
+                this.type = type;
+            }
+
+            getHeightAt(x) {
+                return 50; // Default ground height
+            }
+
+            render(ctx, cameraX) {
+                // Override in subclasses
+            }
+        }
+
+        class FlatTerrain extends TerrainSegment {
+            constructor(startX, endX, height = 50) {
+                super(startX, endX, 'flat');
+                this.height = height;
+            }
+
+            getHeightAt(x) {
+                return this.height;
+            }
+
+            render(ctx, cameraX) {
+                ctx.fillStyle = '#444';
+                ctx.fillRect(
+                    this.startX - cameraX,
+                    game.canvas.height - this.height,
+                    this.endX - this.startX,
+                    this.height
+                );
+            }
+        }
+
+        class HillTerrain extends TerrainSegment {
+            constructor(startX, endX, startHeight, endHeight) {
+                super(startX, endX, 'hill');
+                this.startHeight = startHeight;
+                this.endHeight = endHeight;
+            }
+
+            getHeightAt(x) {
+                if (x <= this.startX) return this.startHeight;
+                if (x >= this.endX) return this.endHeight;
+
+                const t = (x - this.startX) / (this.endX - this.startX);
+                return this.startHeight + (this.endHeight - this.startHeight) * t;
+            }
+
+            render(ctx, cameraX) {
+                ctx.fillStyle = '#555';
+                ctx.beginPath();
+                ctx.moveTo(this.startX - cameraX, game.canvas.height);
+                ctx.lineTo(this.startX - cameraX, game.canvas.height - this.startHeight);
+                ctx.lineTo(this.endX - cameraX, game.canvas.height - this.endHeight);
+                ctx.lineTo(this.endX - cameraX, game.canvas.height);
+                ctx.closePath();
+                ctx.fill();
+            }
+        }
+
+        class SimpleSpiralTerrain extends TerrainSegment {
+            constructor(startX, endX, config = {}) {
+                super(startX, endX, 'spiral3d');
+                this.centerX = config.centerX || (startX + endX) / 2;
+                this.centerY = config.centerY || game.canvas.height / 2;
+                this.radius = config.radius || 100;
+                this.rotations = config.rotations || 2;
+                this.segments = 50;
+                this.time = 0;
+            }
+
+            getHeightAt(x) {
+                // Map X position to spiral
+                const t = (x - this.startX) / (this.endX - this.startX);
+                const angle = t * this.rotations * Math.PI * 2;
+
+                // Simple height variation based on spiral position
+                return 50 + Math.sin(angle) * 30;
+            }
+
+            render(ctx, cameraX) {
+                const viewX = this.centerX - cameraX;
+
+                // Draw spiral path
+                ctx.strokeStyle = '#00ffff';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+
+                for (let i = 0; i <= this.segments; i++) {
+                    const t = i / this.segments;
+                    const angle = t * this.rotations * Math.PI * 2 + this.time * 0.02;
+
+                    // Simple 3D effect
+                    const x3d = Math.cos(angle) * this.radius;
+                    const y3d = Math.sin(angle) * this.radius;
+                    const z = t * 100;
+
+                    // Fake perspective
+                    const scale = 1 - z / 500;
+                    const screenX = viewX + x3d * scale;
+                    const screenY = this.centerY + y3d * scale - z * 0.5;
+
+                    if (i === 0) {
+                        ctx.moveTo(screenX, screenY);
+                    } else {
+                        ctx.lineTo(screenX, screenY);
+                    }
+                }
+                ctx.stroke();
+
+                // Draw ground line for reference
+                ctx.strokeStyle = '#666';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(this.startX - cameraX, game.canvas.height - 50);
+                ctx.lineTo(this.endX - cameraX, game.canvas.height - 50);
+                ctx.stroke();
+
+                this.time++;
+            }
+        }
+
+        // Player class
+        class Player {
+            constructor() {
+                this.x = 100;
+                this.y = 100;
+                this.width = 30;
+                this.height = 30;
+                this.velocityY = 0;
+                this.isJumping = false;
+                this.gravity = 0.8;
+                this.jumpForce = -15;
+                this.rotation = 0;
+            }
+
+            update(terrain) {
+                // Apply gravity
+                this.velocityY += this.gravity;
+                this.y += this.velocityY;
+
+                // Get ground height at player position
+                let groundHeight = 50;
+                for (const segment of terrain) {
+                    if (this.x >= segment.startX && this.x <= segment.endX) {
+                        groundHeight = segment.getHeightAt(this.x);
+                        break;
+                    }
+                }
+
+                const groundY = game.canvas.height - groundHeight - this.height;
+
+                // Ground collision
+                if (this.y >= groundY) {
+                    this.y = groundY;
+                    this.velocityY = 0;
+                    this.isJumping = false;
+                    this.rotation = 0;
+                }
+
+                // Rotation when jumping
+                if (this.isJumping) {
+                    this.rotation += 5;
+                }
+
+                // Auto-move forward
+                this.x += 5;
+            }
+
+            jump() {
+                if (!this.isJumping) {
+                    this.velocityY = this.jumpForce;
+                    this.isJumping = true;
+                }
+            }
+
+            render(ctx, cameraX) {
+                ctx.save();
+
+                // Position relative to camera
+                const screenX = this.x - cameraX + this.width / 2;
+                const screenY = this.y + this.height / 2;
+
+                ctx.translate(screenX, screenY);
+                ctx.rotate(this.rotation * Math.PI / 180);
+
+                // Draw player
+                ctx.fillStyle = '#ff0';
+                ctx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
+
+                ctx.strokeStyle = '#fa0';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(-this.width / 2, -this.height / 2, this.width, this.height);
+
+                ctx.restore();
+            }
+        }
+
+        // Create levels
+        function createLevel(mode) {
+            game.terrain = [];
+            let x = 0;
+
+            switch(mode) {
+                case 'demo':
+                    // Flat start
+                    game.terrain.push(new FlatTerrain(x, x + 300, 50));
+                    x += 300;
+
+                    // Hill up
+                    game.terrain.push(new HillTerrain(x, x + 400, 50, 120));
+                    x += 400;
+
+                    // Flat top
+                    game.terrain.push(new FlatTerrain(x, x + 200, 120));
+                    x += 200;
+
+                    // Hill down
+                    game.terrain.push(new HillTerrain(x, x + 400, 120, 30));
+                    x += 400;
+
+                    // Flat before spiral
+                    game.terrain.push(new FlatTerrain(x, x + 300, 30));
+                    x += 300;
+
+                    // 3D Spiral!
+                    game.terrain.push(new SimpleSpiralTerrain(x, x + 800, {
+                        centerX: x + 400,
+                        centerY: game.canvas.height / 2,
+                        radius: 120,
+                        rotations: 2
+                    }));
+                    x += 800;
+
+                    // Flat end
+                    game.terrain.push(new FlatTerrain(x, x + 1000, 50));
+                    break;
+
+                case 'spiral':
+                    // Start platform
+                    game.terrain.push(new FlatTerrain(x, x + 400, 50));
+                    x += 400;
+
+                    // First spiral
+                    game.terrain.push(new SimpleSpiralTerrain(x, x + 600, {
+                        centerX: x + 300,
+                        centerY: game.canvas.height / 2,
+                        radius: 100,
+                        rotations: 1.5
+                    }));
+                    x += 600;
+
+                    // Bridge
+                    game.terrain.push(new FlatTerrain(x, x + 200, 80));
+                    x += 200;
+
+                    // Second spiral
+                    game.terrain.push(new SimpleSpiralTerrain(x, x + 800, {
+                        centerX: x + 400,
+                        centerY: game.canvas.height / 2 - 50,
+                        radius: 130,
+                        rotations: 2.5
+                    }));
+                    x += 800;
+
+                    // End
+                    game.terrain.push(new FlatTerrain(x, x + 500, 50));
+                    break;
+
+                case 'test':
+                    // Simple test level
+                    game.terrain.push(new FlatTerrain(0, 300, 50));
+                    game.terrain.push(new SimpleSpiralTerrain(300, 900, {
+                        centerX: 600,
+                        centerY: game.canvas.height / 2,
+                        radius: 150,
+                        rotations: 3
+                    }));
+                    game.terrain.push(new FlatTerrain(900, 1500, 50));
+                    break;
+            }
+        }
+
+        // Update game
+        function update() {
+            if (!game.state.isPlaying) return;
+
+            // Update player
+            game.player.update(game.terrain);
+
+            // Update camera
+            game.cameraX = game.player.x - 200;
+
+            // Update score
+            game.state.score = Math.floor(game.player.x / 10);
+            document.getElementById('scoreValue').textContent = game.state.score;
+
+            // Check game over
+            if (game.player.y > game.canvas.height) {
+                gameOver();
+            }
+
+            // Debug info
+            if (game.debug) {
+                const debug = document.getElementById('debugInfo');
+                const currentTerrain = game.terrain.find(t =>
+                    game.player.x >= t.startX && game.player.x <= t.endX
+                );
+                debug.innerHTML = `
+                    Player: (${Math.floor(game.player.x)}, ${Math.floor(game.player.y)})<br>
+                    Camera: ${Math.floor(game.cameraX)}<br>
+                    Terrain: ${currentTerrain ? currentTerrain.type : 'none'}<br>
+                    Canvas: ${game.canvas.width}x${game.canvas.height}
+                `;
+            }
+        }
+
+        // Render game
+        function render() {
+            // Clear canvas
+            game.ctx.fillStyle = '#0a0a0a';
+            game.ctx.fillRect(0, 0, game.canvas.width, game.canvas.height);
+
+            // Draw gradient background
+            const gradient = game.ctx.createLinearGradient(0, 0, 0, game.canvas.height);
+            gradient.addColorStop(0, '#0a0a0a');
+            gradient.addColorStop(1, '#1a1a2e');
+            game.ctx.fillStyle = gradient;
+            game.ctx.fillRect(0, 0, game.canvas.width, game.canvas.height);
+
+            // Render terrain
+            for (const segment of game.terrain) {
+                if (segment.endX >= game.cameraX && segment.startX <= game.cameraX + game.canvas.width) {
+                    segment.render(game.ctx, game.cameraX);
+                }
+            }
+
+            // Render player
+            game.player.render(game.ctx, game.cameraX);
+
+            // Find current terrain type
+            const currentTerrain = game.terrain.find(t =>
+                game.player.x >= t.startX && game.player.x <= t.endX
+            );
+
+            // Display terrain indicator
+            if (currentTerrain && currentTerrain.type === 'spiral3d') {
+                game.ctx.fillStyle = '#00ffff';
+                game.ctx.font = 'bold 24px Arial';
+                game.ctx.textAlign = 'center';
+                game.ctx.fillText('🌀 3D SPIRAL!', game.canvas.width / 2, 100);
+                game.ctx.textAlign = 'left';
+            }
+        }
+
+        // Game loop
+        function gameLoop() {
+            update();
+            render();
+            game.animationId = requestAnimationFrame(gameLoop);
+        }
+
+        // Start game
+        game.start = function(mode) {
+            // Initialize canvas
+            initCanvas();
+
+            // Set game state
+            game.state.mode = mode;
+            game.state.isPlaying = true;
+            game.state.score = 0;
+
+            // Create level
+            createLevel(mode);
+
+            // Create player
+            game.player = new Player();
+
+            // Position player on first terrain
+            const firstTerrain = game.terrain[0];
+            if (firstTerrain) {
+                const groundHeight = firstTerrain.getHeightAt(game.player.x);
+                game.player.y = game.canvas.height - groundHeight - game.player.height - 10;
+            }
+
+            // Hide menu, show game
+            document.getElementById('startMenu').style.display = 'none';
+            document.getElementById('controls').style.display = 'block';
+            document.getElementById('score').style.display = 'block';
+
+            // Start game loop
+            gameLoop();
+        };
+
+        // Game over
+        function gameOver() {
+            game.state.isPlaying = false;
+            cancelAnimationFrame(game.animationId);
+            alert(`Game Over! Score: ${game.state.score}`);
+            location.reload();
+        }
+
+        // Input handling
+        document.addEventListener('keydown', (e) => {
+            if (!game.state.isPlaying) return;
+
+            switch(e.code) {
+                case 'Space':
+                    game.player.jump();
+                    break;
+                case 'KeyD':
+                    game.debug = !game.debug;
+                    document.getElementById('debugInfo').style.display =
+                        game.debug ? 'block' : 'none';
+                    break;
+            }
+        });
+
+        // Click to jump
+        document.getElementById('gameCanvas').addEventListener('click', () => {
+            if (game.state.isPlaying) {
+                game.player.jump();
+            }
+        });
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            initCanvas();
+        });
+
+        // Handle resize
+        window.addEventListener('resize', () => {
+            if (game.canvas) {
+                initCanvas();
+            }
+        });
+    </script>
+</body>
+</html>

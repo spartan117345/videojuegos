@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sudoku Naturaleza</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="hoja hoja1">🍃</div>
+    <div class="hoja hoja2">🌿</div>
+    <div class="hoja hoja3">🍃</div>
+
+    <main class="contenedor">
+
+        <!-- ENCABEZADO -->
+        <header class="encabezado">
+
+            <div>
+                <h1>Sudoku</h1>
+                <p>Piensa · Respira · Disfruta</p>
+            </div>
+
+            <div class="estadisticas">
+
+                <div class="dato">
+                    <span class="icono">◷</span>
+                    <div>
+                        <small>Tiempo</small>
+                        <strong id="tiempo">00:00</strong>
+                    </div>
+                </div>
+
+                <div class="separador"></div>
+
+                <div class="dato">
+                    <span class="icono">✦</span>
+                    <div>
+                        <small>Movimientos</small>
+                        <strong id="movimientos">0</strong>
+                    </div>
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <section class="contenido">
+
+            <!-- FRASE -->
+            <aside class="frase">
+                <p>Un pequeño<br>desafío para<br>tu mente.</p>
+                <span>♥</span>
+            </aside>
+
+
+            <!-- TABLERO -->
+            <section class="zona-juego">
+
+                <div id="tablero" class="tablero"></div>
+
+            </section>
+
+
+            <!-- CONTROLES -->
+            <section class="controles">
+
+                <div class="grupo">
+
+                    <h2>Nivel de dificultad</h2>
+
+                    <div class="dificultades">
+
+                        <button class="dificultad activo" data-nivel="facil">
+                            Fácil
+                        </button>
+
+                        <button class="dificultad" data-nivel="medio">
+                            Medio
+                        </button>
+
+                        <button class="dificultad" data-nivel="dificil">
+                            Difícil
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <button id="nuevoJuego" class="boton principal">
+                    <span>🌱</span>
+                    Nuevo juego
+                </button>
+
+
+                <button id="comprobar" class="boton">
+                    <span>✓</span>
+                    Comprobar solución
+                </button>
+
+
+                <button id="resolver" class="boton">
+                    <span>▦</span>
+                    Resolver Sudoku
+                </button>
+
+
+                <!-- TECLADO -->
+                <div class="teclado">
+
+                    <button data-numero="1">1</button>
+                    <button data-numero="2">2</button>
+                    <button data-numero="3">3</button>
+
+                    <button data-numero="4">4</button>
+                    <button data-numero="5">5</button>
+                    <button data-numero="6">6</button>
+
+                    <button data-numero="7">7</button>
+                    <button data-numero="8">8</button>
+                    <button data-numero="9">9</button>
+
+                    <button data-numero="borrar" class="borrar">
+                        ✕
+                    </button>
+
+                </div>
+
+            </section>
+
+        </section>
+
+
+        <!-- MENSAJE -->
+        <div id="mensaje" class="mensaje"></div>
+
+
+        <footer>
+            <p>🌿 Tómate tu tiempo. Cada casilla es un nuevo reto. 🌿</p>
+        </footer>
+
+    </main>
+
+    <script src="script.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,88 @@
+Aquí tienes los tres archivos completamente separados para mantener la estructura limpia en tu proyecto:
+
+1. Archivo: style.css
+Crea un archivo llamado style.css y pega este código:
+
+CSS
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #121c15;
+  color: #e0f0e3;
+  font-family: 'Courier New', Courier, monospace;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 10px;
+}
+
+.header-container {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+h1 {
+  color: #72db93;
+  font-size: 26px;
+  text-shadow: 2px 2px 0px #000;
+  letter-spacing: 2px;
+}
+
+.subtitle {
+  color: #a3c9a8;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.game-wrapper {
+  position: relative;
+  border: 6px solid #7a4b22;
+  border-radius: 4px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7);
+  background-color: #1e3f4a;
+}
+
+canvas {
+  display: block;
+  background-color: #2b5c6e;
+  image-rendering: pixelated;
+}
+
+.controls-panel {
+  margin-top: 12px;
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  background: #2e5a44;
+  color: #72db93;
+  border: 2px solid #72db93;
+  padding: 6px 14px;
+  font-family: inherit;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all 0.2s;
+}
+
+.btn:hover {
+  background: #72db93;
+  color: #121c15;
+}
+
+.info-text {
+  font-size: 11px;
+  color: #8dae92;
+  margin-top: 10px;
+  text-align: center;
+}

@@ -1,0 +1,320 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Orbitron', monospace;
+    background:
+        radial-gradient(circle at 20% 20%, rgba(120, 70, 180, 0.25), transparent 30%),
+        radial-gradient(circle at 80% 80%, rgba(255, 50, 150, 0.18), transparent 30%),
+        #05030d;
+    color: #ffffff;
+    overflow: hidden;
+    min-height: 100vh;
+}
+
+/* CONTENEDOR */
+
+.game-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* PANTALLA DE INICIO */
+
+.start-screen {
+    width: min(650px, 90vw);
+    text-align: center;
+    background: rgba(10, 7, 25, 0.94);
+    padding: 45px 40px;
+    border-radius: 24px;
+    border: 1px solid #ff4fc3;
+    box-shadow:
+        0 0 25px rgba(255, 79, 195, 0.25),
+        0 0 70px rgba(119, 73, 255, 0.15);
+    animation: screenAppear 0.8s ease;
+}
+
+.mini-rocket {
+    width: 55px;
+    height: 55px;
+    margin: 0 auto 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #ff63c9;
+    font-size: 40px;
+    text-shadow: 0 0 20px #ff63c9;
+    animation: floatRocket 2s ease-in-out infinite;
+}
+
+.game-tag {
+    color: #9e8cff;
+    font-size: 0.75rem;
+    letter-spacing: 5px;
+    margin-bottom: 12px;
+}
+
+.start-screen h1 {
+    font-size: clamp(2.3rem, 6vw, 4rem);
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: 3px;
+    text-shadow:
+        0 0 10px #ff4fc3,
+        0 0 30px rgba(255, 79, 195, 0.6);
+    margin-bottom: 8px;
+}
+
+.start-screen h2 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #ff63c9;
+    letter-spacing: 4px;
+    margin-bottom: 18px;
+}
+
+.decorative-line {
+    width: 180px;
+    height: 2px;
+    margin: 0 auto 25px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        #ff4fc3,
+        #9e8cff,
+        transparent
+    );
+}
+
+.instructions {
+    margin: 25px 0 30px;
+    padding: 18px;
+    border: 1px solid rgba(158, 140, 255, 0.25);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.instructions p {
+    font-size: 0.95rem;
+    color: #d8d4e8;
+    margin: 10px 0;
+}
+
+.instructions strong {
+    color: #ff63c9;
+}
+
+#startButton,
+#restartButton {
+    background: linear-gradient(135deg, #ff4fc3, #8d6cff);
+    color: #ffffff;
+    border: none;
+    padding: 16px 34px;
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: 'Orbitron', monospace;
+    border-radius: 10px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: 0.3s ease;
+    box-shadow: 0 0 20px rgba(255, 79, 195, 0.35);
+}
+
+#startButton:hover,
+#restartButton:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow:
+        0 0 25px rgba(255, 79, 195, 0.65),
+        0 0 45px rgba(141, 108, 255, 0.3);
+}
+
+.version-text {
+    margin-top: 25px;
+    color: #68627c;
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+}
+
+/* HUD */
+
+.game-ui {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hud {
+    position: absolute;
+    top: -55px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    z-index: 10;
+}
+
+.hud-item {
+    min-width: 145px;
+    padding: 9px 18px;
+    border-radius: 10px;
+    background: rgba(10, 7, 25, 0.9);
+    border: 1px solid rgba(255, 79, 195, 0.45);
+    text-align: center;
+    box-shadow: 0 0 15px rgba(255, 79, 195, 0.08);
+}
+
+.hud-item .label {
+    display: block;
+    font-size: 0.65rem;
+    color: #9e8cff;
+    letter-spacing: 2px;
+    margin-bottom: 5px;
+}
+
+.hud-item .value {
+    display: block;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+/* CANVAS */
+
+#gameCanvas {
+    display: block;
+    background: #06040f;
+    border: 1px solid #ff4fc3;
+    border-radius: 14px;
+    box-shadow:
+        0 0 20px rgba(255, 79, 195, 0.2),
+        0 0 60px rgba(141, 108, 255, 0.12);
+}
+
+/* CONTROLES */
+
+.controls {
+    position: absolute;
+    bottom: -38px;
+    width: 100%;
+    text-align: center;
+    color: #70698a;
+    font-size: 0.65rem;
+    letter-spacing: 1px;
+}
+
+/* GAME OVER */
+
+.game-over-screen {
+    width: min(600px, 90vw);
+    text-align: center;
+    background: rgba(10, 7, 25, 0.96);
+    padding: 45px 40px;
+    border-radius: 24px;
+    border: 1px solid #ff4f8b;
+    box-shadow:
+        0 0 30px rgba(255, 79, 139, 0.25),
+        0 0 70px rgba(141, 108, 255, 0.12);
+    animation: screenAppear 0.6s ease;
+}
+
+.game-over-screen h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    color: #ffffff;
+    margin-bottom: 15px;
+    text-shadow: 0 0 20px rgba(255, 79, 139, 0.6);
+}
+
+#finalMessage {
+    font-size: 1rem;
+    line-height: 1.8;
+    margin: 20px 0;
+    color: #d8d4e8;
+}
+
+.final-score {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 30px 0;
+}
+
+.final-score span {
+    color: #9e8cff;
+    font-size: 0.75rem;
+    letter-spacing: 3px;
+}
+
+.final-score strong {
+    color: #ff63c9;
+    font-size: 2.7rem;
+    text-shadow: 0 0 20px rgba(255, 99, 201, 0.5);
+}
+
+/* ANIMACIONES */
+
+@keyframes screenAppear {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes floatRocket {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 850px) {
+
+    #gameCanvas {
+        width: 90vw;
+        height: auto;
+    }
+
+    .game-ui {
+        width: 90vw;
+    }
+
+    .hud {
+        top: -95px;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .hud-item {
+        min-width: auto;
+    }
+
+    .controls {
+        bottom: -35px;
+        font-size: 0.55rem;
+    }
+
+    .start-screen {
+        padding: 35px 25px;
+    }
+}

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Geometry Dash - Game Select</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  font-family:'Courier New',monospace;color:#fff;
+  background:radial-gradient(circle at top,#3a1620 0,#160f14 45%,#08090d 100%);
+}
+.menu{
+  width:min(760px,92%);padding:42px;border:2px solid #ff6b35;border-radius:24px;
+  background:rgba(12,14,20,.94);box-shadow:0 0 45px rgba(255,107,53,.22),0 25px 80px #000;
+  text-align:center;
+}
+h1{
+  font-size:clamp(2rem,6vw,4rem);letter-spacing:4px;
+  background:linear-gradient(90deg,#ffd166,#ff6b35,#ef476f,#ffd166);
+  background-size:250% auto;-webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;animation:shine 4s linear infinite;
+}
+@keyframes shine{to{background-position:250% center}}
+.subtitle{margin:12px 0 30px;color:#b8bec9}
+.options{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.card{
+  display:block;text-decoration:none;color:#fff;padding:28px 20px;border-radius:16px;
+  border:1px solid rgba(255,209,102,.35);background:linear-gradient(145deg,#1b202b,#11151d);
+  transition:.2s transform,.2s box-shadow,.2s border-color;
+}
+.card:hover{transform:translateY(-5px);border-color:#ffd166;box-shadow:0 0 25px rgba(255,209,102,.2)}
+.card h2{color:#ffd166;margin-bottom:10px}.card p{color:#aeb6c2;font-size:.9rem;line-height:1.5}
+.play{display:inline-block;margin-top:18px;padding:10px 18px;border-radius:9px;
+background:linear-gradient(135deg,#ff6b35,#ef476f);font-weight:bold}
+.footer{margin-top:24px;font-size:.75rem;color:#687180}
+@media(max-width:620px){.options{grid-template-columns:1fr}.menu{padding:28px 20px}}
+</style>
+</head>
+<body>
+<main class="menu">
+  <h1>GEOMETRY DASH</h1>
+  <p class="subtitle">Selecciona la versión que quieres jugar</p>
+  <section class="options">
+    <a class="card" href="index-classic.html">
+      <h2>PLAY index.html</h2>
+      <p>Versión clásica: sencilla, rápida y directa.</p>
+      <span class="play">PLAY CLASSIC ▶</span>
+    </a>
+    <a class="card" href="index-enhanced.html">
+      <h2>PLAY index-enhanced.html</h2>
+      <p>Versión mejorada con ajustes, logros y funciones adicionales.</p>
+      <span class="play">PLAY ENHANCED 🚀</span>
+    </a>
+  </section>
+  <div class="footer">Game JavaScript • Menú principal</div>
+</main>
+</body>
+</html>

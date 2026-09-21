@@ -1,0 +1,71 @@
+.grid {
+    display: flex;
+    flex-wrap: wrap;
+    width: 560px;
+    height: 560px;
+    border: 3px solid #333;
+    background-color: #111;
+}
+  
+.grid div {
+    width: 20px;
+    height: 20px;
+}
+
+.pac-dot {
+    background-color: #ffeb3b;   
+    border: 7px solid #111;
+    border-radius: 50%;
+    box-sizing: border-box;
+}
+
+.wall {
+    background-color: #1a237e;
+    border: 1px solid #283593;
+    box-sizing: border-box;
+}
+
+.power-pellet {
+    background-color: #ff007f;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-sizing: border-box;
+}
+
+/* Novedad: Nuevos colores para los personajes */
+.pac-man {
+    background-color: #00e676; /* Verde Neón */
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+/* Pac-Man cuando tiene el boost de velocidad */
+.pac-man-powered {
+    background-color: #ffea00 !important; /* Amarillo Neón Brillante */
+    box-shadow: 0 0 8px #ffea00;
+}
+
+.blinky {
+    background-color: #ff1744; /* Rojo carmesí */
+    border-radius: 50% 50% 0 0;
+}
+
+.pinky {
+    background-color: #f50057; /* Rosa magenta */
+    border-radius: 50% 50% 0 0;
+}
+
+.inky {
+    background-color: #00e5ff; /* Turquesa cian */
+    border-radius: 50% 50% 0 0;
+}
+
+.clyde {
+    background-color: #ff9100; /* Naranja eléctrico */
+    border-radius: 50% 50% 0 0;
+}
+
+.scared-ghost {
+    background-color: #7c4dff !important; /* Púrpura asustado */
+    border-radius: 50%;
+}

@@ -1,0 +1,101 @@
+:root {
+  --bg-principal: #0d1b1e;       /* Noche en el Cañón */
+  --fondo-panel: #1b2d2a;        /* Verde selva oscuro */
+  --verde-gallineral: #2a9d8f;   /* Verde exuberante */
+  --piedra-barichara: #d4a373;   /* Tono arcilla / piedra */
+  --naranja-aventura: #e07a5f;   /* Kayak / Atardecer */
+  --texto-claro: #f4f1de;
+}
+
+body {
+  background-color: var(--bg-principal);
+  color: var(--texto-claro);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.game-container {
+  text-align: center;
+  padding: 20px;
+}
+
+.header h1 {
+  color: var(--naranja-aventura);
+  font-size: 2.2rem;
+  letter-spacing: 2px;
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  color: var(--verde-gallineral);
+  font-weight: bold;
+  margin-top: 0;
+}
+
+.main-content {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  align-items: flex-start;
+  margin-top: 20px;
+}
+
+/* Lienzo del juego */
+.canvas-wrapper {
+  border: 4px solid var(--piedra-barichara);
+  border-radius: 8px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6);
+  background-color: #121e17;
+}
+
+.game-board {
+  display: block;
+}
+
+/* Panel lateral */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 180px;
+}
+
+.card {
+  background: var(--fondo-panel);
+  border: 2px solid var(--piedra-barichara);
+  border-radius: 6px;
+  padding: 10px;
+}
+
+.card h2 {
+  font-size: 0.85rem;
+  margin: 0 0 5px 0;
+  color: var(--piedra-barichara);
+  text-transform: uppercase;
+}
+
+.score-value, .level-value, .lines-value, .character-box {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.btn-sangil {
+  background-color: var(--naranja-aventura);
+  color: white;
+  border: none;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.1s, background 0.2s;
+}
+
+.btn-sangil:hover {
+  background-color: #f4a261;
+  transform: scale(1.03);
+}
