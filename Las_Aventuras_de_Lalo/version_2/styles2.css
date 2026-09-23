@@ -1,0 +1,226 @@
+:root {
+  --root-clr: #2d5a27; /* Verde frondoso Gallineral */
+  --sand-clay: #a04828; /* Tierra arcillosa Chicamocha */
+  --santander-gold: #f5b041;
+  --fonce-blue: #2980b9;
+  
+  --tile-line-height: 50px;
+  --tile-size: 25px;
+  --clr: #1e392a;
+  --pl-clr: radial-gradient(circle at 75% 50%, white 1px, transparent 2px), radial-gradient(circle at 25% 50%, white 1px, transparent 2px), radial-gradient(circle at 75% 40%, black 3px, transparent 4px), radial-gradient(circle at 25% 40%, black 3px, transparent 4px), white;
+}
+
+html, body {
+  min-width: 100vw;
+  min-height: 100vh;
+  overflow: hidden;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  background: #0d1b1e; /* Noche santandereana */
+}
+
+/* Lienzo del juego con proporciones fijas para 40x22 celdas de 25px */
+#game_console {
+  width: 1000px;
+  height: 550px;
+  position: relative;
+  background: linear-gradient(to bottom, rgba(13,27,30,0.85), rgba(45,90,39,0.95)),
+              var(--root-clr);
+  text-align: center;
+  line-height: var(--tile-line-height);
+  font-size: 0;
+  color: transparent;
+  user-select: none;
+  box-shadow: 0 20px 25px rgba(0,0,0,0.8);
+  overflow: hidden;
+}
+
+/* HUD estilo aventura colonial */
+#deaths_counter, #time_counter {
+  padding: 0.2rem 1rem;
+  font-size: 16px;
+  font-family: 'Trebuchet MS', system-ui, sans-serif;
+  font-weight: bold;
+  line-height: 100%;
+  color: var(--santander-gold);
+  position: absolute;
+  text-shadow: 1px 1px 3px black;
+  z-index: 9999;
+}
+
+#deaths_counter {
+  top: 10px;
+  left: 10px;
+}
+
+#time_counter {
+  top: 10px;
+  right: 10px;
+}
+
+#game_alert {
+  padding: 0.8rem 1.5rem;
+  font-size: 15px;
+  font-family: 'Trebuchet MS', system-ui, sans-serif;
+  line-height: 120%;
+  color: #fff;
+  background: rgba(160, 72, 40, 0.95);
+  border: 2px solid var(--santander-gold);
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 99999;
+  border-radius: 25px;
+  transition: opacity 0.5s ease;
+  opacity: 0;
+  pointer-events: none;
+  user-select: none;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  text-align: center;
+}
+
+/* Celdas del mapa */
+.tile {
+  box-sizing: border-box;
+  position: absolute;
+  width: 25px;
+  height: 25px;
+}
+
+/* Plataformas de tierra arcillosa */
+.ground {
+  background: var(--sand-clay);
+  border-top: 4px solid rgba(245, 176, 65, 0.6);
+  border-right: 4px solid rgba(0,0,0,0.4);
+  border-bottom: 4px solid rgba(0,0,0,0.6);
+  border-left: 4px solid rgba(0,0,0,0.3);
+  z-index: 2;
+}
+
+/* Paredes internas */
+.innerwall {
+  background: #6e3019;
+  z-index: 2;
+}
+
+/* Pinchos de lava del Cañón */
+.lava {
+  background: conic-gradient(at 50% 0%, transparent 0deg 153deg, rgba(0,0,0,.6) 155deg 190deg, rgba(245,176,65,.8) 192deg 205deg, transparent 207deg 360deg),
+              conic-gradient(at 50% 0%, transparent 0deg 153deg, #e74c3c 155deg 195deg, #c0392b 197deg 205deg, transparent 207deg 360deg);
+  z-index: 3;
+}
+.spleft { transform: rotate(-90deg); }
+.sptop { transform: rotate(180deg); }
+.spright { transform: rotate(90deg); }
+
+/* Portales de nivel */
+.portal1:after, .portal2:after {
+  content: '';
+  width: 150%;
+  height: 150%;
+  position: absolute;
+  top: -25%;
+  left: -25%;
+  background: radial-gradient(circle at 50% 50%, rgba(245,176,65,1) 3px, rgba(45,90,39,.9) 6px, rgba(45,90,39,.75) 10px, rgba(41,128,185,.5) 15px, transparent 20px),
+              var(--root-clr);
+  animation: portal 2s linear infinite;
+  pointer-events: none;
+  border-radius: 50%;
+  box-shadow: 0 0 12px var(--santander-gold);
+}
+
+@keyframes portal {
+  50% { transform: scale(1.15); }
+}
+
+.nextlevel {
+  background: linear-gradient(to bottom right, transparent 10%, var(--santander-gold) 10% 30%, transparent 30% 60%, var(--santander-gold) 60% 80%, transparent 80%);
+  background-size: 25px 25px;
+}
+
+/* Personaje Jugador (#player2) */
+#player2, #player2:after {
+  content: '';
+  width: 25px;
+  height: 25px;
+  background: transparent;
+  position: absolute;
+  z-index: 10000;
+  pointer-events: none;
+}
+
+#player2:before {
+  content: '';
+  width: 25px;
+  height: 25px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: radial-gradient(circle at 65% 90%, #ffffff 2px, transparent 3px),
+              radial-gradient(circle at 35% 90%, #ffffff 2px, transparent 3px);
+  z-index: 10001;
+}
+
+#player2:after {
+  width: 20px;
+  height: 25px;
+  background: radial-gradient(circle at 60% 30%, #ffffff 2px, transparent 3px),
+              radial-gradient(circle at 50% 40%, #000000 5px, transparent 6px),
+              linear-gradient(to top, #27ae60, #f5b041, #c0392b 50%),
+              #c0392b;
+  position: absolute;
+  top: -4px;
+  left: 2.5px;
+  z-index: 10000;
+  border-radius: 15px 15px 4px 4px;
+  pointer-events: none;
+  animation: blink2 4s linear infinite;
+}
+
+@keyframes blink2 {
+  5% {
+    background: linear-gradient(to top, transparent 75%, #c0392b 75%),
+                radial-gradient(circle at 60% 30%, #ffffff 2px, transparent 3px),
+                radial-gradient(circle at 50% 40%, #000000 5px, transparent 6px),
+                linear-gradient(to top, #27ae60, #f5b041, #c0392b 50%),
+                #c0392b;
+  }
+  10% {
+    background: linear-gradient(to top, transparent 50%, #c0392b 50%),
+                radial-gradient(circle at 60% 30%, #ffffff 2px, transparent 3px),
+                radial-gradient(circle at 50% 40%, #000000 5px, transparent 6px),
+                linear-gradient(to top, #27ae60, #f5b041, #c0392b 50%),
+                #c0392b;
+  }
+  15% {
+    background: linear-gradient(to top, transparent 100%, #c0392b 100%),
+                radial-gradient(circle at 60% 30%, #ffffff 2px, transparent 3px),
+                radial-gradient(circle at 50% 40%, #000000 5px, transparent 6px),
+                linear-gradient(to top, #27ae60, #f5b041, #c0392b 50%),
+                #c0392b;
+  }
+}
+
+/* Movimiento y estela de partículas */
+.goleft:after { transform: skewX(10deg); }
+.goright:after { transform: skewX(-10deg); }
+
+.trailBall {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: var(--santander-gold);
+  border-radius: 50%;
+  opacity: 1;
+  pointer-events: none;
+  animation: trail .75s linear forwards;
+}
+
+@keyframes trail {
+  100% {
+    transform: translateY(-25px);
+    opacity: 0;
+  }
+}

@@ -1,0 +1,43 @@
+*
+
+/* Solo para el encabezado del index */
+ {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+header.index {
+    background-color: #0e0d0d;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: sans-serif;
+}
+
+header.index span {
+    color: rgb(255, 255, 255);
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+}
+
+#hero {
+    /* 1. Altura para que ocupe la pantalla */
+    height: 80vh; 
+
+    /* 2. Imagen de fondo con una capa oscura encima (negro transparente) */
+    background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('tu-imagen.jpg');
+    background-size: cover;
+    background-position: center;
+
+    /* 3. Flexbox para centrar todo el contenido */
+    display: flex;
+    flex-direction: column;    /* Coloca el botón debajo del título */
+    justify-content: center;   /* Centra verticalmente */
+    align-items: center;       /* Centra horizontalmente */
+    
+    /* Extra: Color de letra blanco para que resalte */
+    color: white; 
+    text-align: center;
+}
