@@ -20,3 +20,21 @@
 #projectile, #gears, #hivewhale, #drone, #smokeExplosion, #fireExplosion {
   display: none;
 }
+
+.boton-regreso {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    padding: 10px 18px;
+    background-color: #222;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    z-index: 9999;
+}
+
+.boton-regreso:hover {
+    background-color: #444;
+}
